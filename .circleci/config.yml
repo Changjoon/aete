@@ -42,5 +42,5 @@ jobs:
       - run:
           name: Build and publish AETE image to docker hub
           command: |
-            ~/.docker/cli-plugins/docker-buildx build --platform linux/arm,linux/arm64,linux/amd64 -t changjoon/aete:${CIRCLE_TAG} . --push
+            ~/.docker/cli-plugins/docker-buildx build --platform linux/arm,linux/amd64 -t changjoon/aete:${CIRCLE_TAG} . --push
             ~/.docker/cli-plugins/docker-buildx imagetools inspect changjoon/aete:${CIRCLE_TAG}

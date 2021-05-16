@@ -28,10 +28,10 @@ jobs:
           name: Install buildx
           command: |
             export DOCKER_CLI_EXPERIMENTAL=enabled
-            export DOCKER_BUILDKIT=1
-            docker build --platform=local -o . git://github.com/docker/buildx
+            wget https://github.com/docker/buildx/releases/download/v0.5.1/buildx-v0.5.1.linux-amd64
             mkdir -p ~/.docker/cli-plugins
-            mv buildx ~/.docker/cli-plugins/docker-buildx
+            mv buildx-v0.5.1.linux-amd64 ~/.docker/cli-plugins/docker-buildx
+            chmod +x ~/.docker/cli-plugins/docker-buildx
             docker buildx --help
       - run:
           name: Create a multi-architecture build instance

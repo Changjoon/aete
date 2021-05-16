@@ -1,0 +1,47 @@
+version: 2
+
+workflows:
+  version: 2
+  default:
+    jobs:
+      - build:
+          filters:
+            branches:
+              only:
+                - main
+  tag:
+    jobs:
+      - build:
+          filters:
+            branches:
+              ignore: /.*/
+            tags: # Only work with git tags that are formatted like 'v0.0.1'.
+              only: /(^[Vv]|^)(?:(?<major>(?:0|[1-9](?:(?:0|[1-9])+)*))[.](?<minor>(?:0|[1-9](?:(?:0|[1-9])+)*))[.](?<patch>(?:0|[1-9](?:(?:0|[1-9])+)*))(?:-(?<prerelease>(?:(?:(?:[A-Za-z]|-)(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)?|(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)(?:[A-Za-z]|-)(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)?)|(?:0|[1-9](?:(?:0|[1-9])+)*))(?:[.](?:(?:(?:[A-Za-z]|-)(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)?|(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)(?:[A-Za-z]|-)(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)?)|(?:0|[1-9](?:(?:0|[1-9])+)*)))*))?(?:[+](?<build>(?:(?:(?:[A-Za-z]|-)(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)?|(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)(?:[A-Za-z]|-)(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)?)|(?:(?:0|[1-9])+))(?:[.](?:(?:(?:[A-Za-z]|-)(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)?|(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)(?:[A-Za-z]|-)(?:(?:(?:0|[1-9])|(?:[A-Za-z]|-))+)?)|(?:(?:0|[1-9])+)))*))?)$/
+
+jobs:
+  build:
+    docker: 
+      - image: circleci/docker@1.5.0
+    working_directory: ~/aete
+    steps:
+      - checkout
+      - run:
+          name: Install buildx
+          command: |
+            export DOCKER_CLI_EXPERIMENTAL=enabled
+            export DOCKER_BUILDKIT=1
+            docker build --platform=local -o . git://github.com/docker/buildx
+            mkdir -p ~/.docker/cli-plugins
+            mv buildx ~/.docker/cli-plugins/docker-buildx
+            docker buildx --help
+      - run:
+          name: Create a multi-architecture build instance
+          command: |
+            docker buildx create --name mybuilder
+            docker buildx use mybuilder
+            docker buildx inspect --bootstrap
+      - run:
+          name: Build and publish AETE image to docker hub
+          command: |
+            docker buildx build --platform linux/arm,linux/arm64,linux/amd64 -t changjoon/aete:${CIRCLE_TAG} . --push
+            docker buildx imagetools inspect changjoon/aete:${CIRCLE_TAG}

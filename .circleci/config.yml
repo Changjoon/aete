@@ -2,13 +2,6 @@ version: 2
 
 workflows:
   version: 2
-  default:
-    jobs:
-      - build:
-          filters:
-            branches:
-              only:
-                - main
   tag:
     jobs:
       - build:

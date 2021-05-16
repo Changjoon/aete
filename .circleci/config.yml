@@ -2,13 +2,6 @@ version: 2
 
 workflows:
   version: 2
-  default:
-    jobs:
-      - build:
-          filters:
-            branches:
-              only:
-                - main
   tag:
     jobs:
       - build:
@@ -24,6 +17,8 @@ jobs:
     working_directory: ~/aete
     steps:
       - checkout
+      - setup_remote_docker:
+          version: 20.10.6
       - run:
           name: Install buildx
           command: |

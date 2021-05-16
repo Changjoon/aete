@@ -21,12 +21,12 @@ workflows:
 jobs:
   build:
     docker: 
-      - image: docker:19.03.15
+      - image: docker:19.03.13
     working_directory: ~/aete
     steps:
       - checkout
       - setup_remote_docker:
-          version: 19.03.15
+          version: 19.03.13
       - run:
           name: Install buildx
           command: |

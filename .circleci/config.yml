@@ -21,19 +21,22 @@ workflows:
 jobs:
   build:
     docker: 
-      - image: circleci/docker@1.5.0
+      - image: docker:20.10.6
     working_directory: ~/aete
     steps:
       - checkout
+      - setup_remote_docker:
+          version: 20.10.6
       - run:
           name: Install buildx
           command: |
             export DOCKER_CLI_EXPERIMENTAL=enabled
-            export DOCKER_BUILDKIT=1
-            docker build --platform=local -o . git://github.com/docker/buildx
+            wget https://github.com/docker/buildx/releases/download/v0.5.1/buildx-v0.5.1.linux-amd64
             mkdir -p ~/.docker/cli-plugins
-            mv buildx ~/.docker/cli-plugins/docker-buildx
-            docker buildx --help
+            mv buildx-v0.5.1.linux-amd64 ~/.docker/cli-plugins/docker-buildx
+            export PATH=~/.docker/cli-plugins/:${PATH}
+            ~/.docker/cli-plugins/docker-buildx
+            docker buildx
       - run:
           name: Create a multi-architecture build instance
           command: |
@@ -43,5 +46,5 @@ jobs:
       - run:
           name: Build and publish AETE image to docker hub
           command: |
-            docker buildx build --platform linux/arm,linux/arm64,linux/amd64 -t changjoon/aete:${CIRCLE_TAG} . --push
-            docker buildx imagetools inspect changjoon/aete:${CIRCLE_TAG}
+            docker buildx build --platform linux/arm,linux/arm64,linux/amd64 -t changjoon/aete:0.0.0 . --push
+            docker buildx imagetools inspect changjoon/aete:0.0.0

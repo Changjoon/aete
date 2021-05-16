@@ -32,15 +32,15 @@ jobs:
             mkdir -p ~/.docker/cli-plugins
             mv buildx-v0.5.1.linux-amd64 ~/.docker/cli-plugins/docker-buildx
             chmod +x ~/.docker/cli-plugins/docker-buildx
-            ~/.docker/cli-plugin/docker-buildx
+            ~/.docker/cli-plugins/docker-buildx
       - run:
           name: Create a multi-architecture build instance
           command: |
-            ~/.docker/cli-plugin/docker-buildx create --name mybuilder
-            ~/.docker/cli-plugin/docker-buildx use mybuilder
-            ~/.docker/cli-plugin/docker-buildx inspect --bootstrap
+            ~/.docker/cli-plugins/docker-buildx create --name mybuilder
+            ~/.docker/cli-plugins/docker-buildx use mybuilder
+            ~/.docker/cli-plugins/docker-buildx inspect --bootstrap
       - run:
           name: Build and publish AETE image to docker hub
           command: |
-            ~/.docker/cli-plugin/docker-buildx build --platform linux/arm,linux/arm64,linux/amd64 -t changjoon/aete:${CIRCLE_TAG} . --push
-            ~/.docker/cli-plugin/docker-buildx imagetools inspect changjoon/aete:${CIRCLE_TAG}
+            ~/.docker/cli-plugins/docker-buildx build --platform linux/arm,linux/arm64,linux/amd64 -t changjoon/aete:${CIRCLE_TAG} . --push
+            ~/.docker/cli-plugins/docker-buildx imagetools inspect changjoon/aete:${CIRCLE_TAG}

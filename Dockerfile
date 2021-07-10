@@ -20,6 +20,11 @@ RUN apt install -y libtiff5-dev libjpeg8-dev libopenjp2-7-dev zlib1g-dev \
     libfreetype6-dev liblcms2-dev libwebp-dev tcl8.6-dev tk8.6-dev python3-tk \
     libharfbuzz-dev libfribidi-dev libxcb1-dev
 
+RUN apt install -y language-pack-ko
+RUN locale-gen ko_KR.UTF-8
+RUN update-locale LANG=ko_KR.UTF-8 LC_MESSAGES=POSIX
+RUN locale
+
 RUN curl -fsSL https://get.docker.com -o get-docker.sh
 RUN /bin/bash ./get-docker.sh
 RUN usermod -aG docker ${USER}
